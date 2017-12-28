@@ -1,0 +1,25 @@
+{
+  "name": "serialport-lite",
+  "version": "0.1.0",
+  "description": "Serial port lite client",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sneezry/serialport-lite.git"
+  },
+  "author": "Zhe Li",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sneezry/serialport-lite/issues"
+  },
+  "homepage": "https://github.com/Sneezry/serialport-lite#readme",
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^8.5.2"
+  }
+}
