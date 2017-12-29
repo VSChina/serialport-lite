@@ -3,6 +3,13 @@ import * as os from 'os';
 import {setInterval} from 'timers';
 import {resolve} from 'url';
 
+interface MacDeviceInfo {
+  name: string|null;
+  vid: number|null;
+  pid: number|null;
+  location: string|null;
+}
+
 export interface DeviceInfo {
   port: string;
   vendorId: number|null;
@@ -220,13 +227,6 @@ async function getLinuxDeviceId(
               resolve(device);
             });
       });
-}
-
-export interface MacDeviceInfo {
-  name: string|null;
-  vid: number|null;
-  pid: number|null;
-  location: string|null;
 }
 
 async function getMacDeviceId(list: DeviceInfo[]): Promise<DeviceInfo[]> {
