@@ -25,7 +25,11 @@
   "homepage": "https://github.com/Sneezry/serialport-lite#readme",
   "devDependencies": {
     "@types/node": "^7.0.43",
+    "@types/xml-js": "^1.0.0",
     "gts": "^0.5.2",
     "typescript": "^2.6.1"
+  },
+  "dependencies": {
+    "xml-js": "^1.6.1"
   }
 }

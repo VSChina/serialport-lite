@@ -1,5 +1,5 @@
 {
-  "extends": "./..\\..\\..\\AppData\\Roaming\\npm\\node_modules\\gts\\tsconfig-google.json",
+  "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "out"
