@@ -36,12 +36,12 @@ export class SerialPortLite {
           } else if (os.type() === 'Linux') {
             exec(
                 'find /sys/bus/usb/devices/usb*/ -name dev',
-                (error, stdout, stderr) => {
+                async (error, stdout, stderr) => {
                   if (error) {
                     reject(error);
                     return;
                   }
-                  const list = parseLinuxDeviceList(stdout);
+                  const list = await parseLinuxDeviceList(stdout);
                   resolve(list);
                 });
           } else {

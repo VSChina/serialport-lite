@@ -6,7 +6,7 @@ try {
   });
 
   SerialPortLite.write(
-      '/dev/cu.usbmodem1423', 'set_wifissid sneezry\r', 115200);
+      '/dev/ttyACM0', 'set_wifissid sneezry\r', 115200);
 } catch (e) {
   console.log(e);
 }
