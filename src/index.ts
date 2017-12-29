@@ -1,7 +1,6 @@
 import {exec} from 'child_process';
 import * as os from 'os';
 import {setInterval} from 'timers';
-import * as XMLJS from 'xml-js';
 
 export interface DeviceInfo {
   port: string;
