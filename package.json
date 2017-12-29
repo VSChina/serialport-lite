@@ -2,6 +2,8 @@
   "name": "serialport-lite",
   "version": "0.1.0",
   "description": "Serial port lite client",
+  "main": "./out/index.js",
+  "types": "./out/index.d.ts",
   "scripts": {
     "compile": "tsc -p .",
     "watch": "tsc -watch -p ./",
