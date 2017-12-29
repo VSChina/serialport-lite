@@ -33,7 +33,7 @@ export class SerialPortLite {
               resolve(list);
             });
           } else if (os.type() === 'Linux') {
-            exec('ls /dev/tty.*', (error, stdout, stderr) => {
+            exec('ls /dev/ttyACM*', (error, stdout, stderr) => {
               if (error) {
                 reject(error);
                 return;
@@ -60,7 +60,7 @@ export class SerialPortLite {
                 return;
               }
 
-              const _data: string[] = [];
+              const _data: string[] = ['\\r\\n'];
 
               while (data.length > 120) {
                 _data.push(data.substr(0, 120));
@@ -88,21 +88,41 @@ export class SerialPortLite {
             });
           } else {
             exec(
-                `stty -f ${port} cs8 ${
-                    speed} ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts`,
+                `screen -dmS devkit ${port} ${speed}`,
                 (error, stdout, stderr) => {
                   if (error) {
+                    exec('screen -X -S devkit quit');
                     reject(error);
                     return;
                   }
-                  exec(`echo '${data}' > ${port}`, (error, stdout, stderr) => {
-                    if (error) {
-                      reject(error);
+
+                  const _data: string[] = ['\\r'];
+
+                  while (data.length > 120) {
+                    _data.push(data.substr(0, 120));
+                    data = data.substr(120);
+                  }
+
+                  _data.push(data);
+
+                  const sender = setInterval(() => {
+                    if (_data.length === 0) {
+                      clearInterval(sender);
+                      exec('screen -X -S devkit quit');
+                      resolve(true);
                       return;
                     }
-
-                    resolve(true);
-                  });
+                    exec(
+                        `screen -S devkit -p 0 -X stuff $'${_data.shift()}\\n'`,
+                        (error, stdout, stderr) => {
+                          if (error) {
+                            clearInterval(sender);
+                            exec('screen -X -S devkit quit');
+                            reject(error);
+                            return;
+                          }
+                        });
+                  }, 1000);
                 });
           }
         });
