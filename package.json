@@ -1,16 +1,16 @@
 {
   "name": "serialport-lite",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Serial port lite client",
-  "main": "./out/index.js",
-  "types": "./out/index.d.ts",
+  "main": "./dist/index",
+  "types": "./dist/index",
   "scripts": {
     "compile": "tsc -p .",
     "watch": "tsc -watch -p ./",
     "check": "gts check",
     "clean": "gts clean",
     "fix": "gts fix",
-    "test": "node out/test.js",
+    "test": "node dist/test/index.js",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run check"
