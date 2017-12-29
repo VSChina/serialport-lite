@@ -5,7 +5,7 @@ try {
     console.log(list);
   });
 
-  SerialPortLite.write('COM30', 'help\r\n', 115200);
+  SerialPortLite.write('COM30', 'set_wifissid sneezry\r', 115200);
 } catch (e) {
   console.log(e);
 }

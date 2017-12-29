@@ -73,7 +73,7 @@ export class SerialPortLite {
                 reject(error);
                 return;
               }
-              exec(`echo -ne '${data}' > ${port}`, (error, stdout, stderr) => {
+              exec(`echo '${data}' > ${port}`, (error, stdout, stderr) => {
                 if (error) {
                   reject(error);
                   return;
