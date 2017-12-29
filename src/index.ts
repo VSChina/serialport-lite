@@ -1,6 +1,7 @@
 import {exec} from 'child_process';
 import * as os from 'os';
 import {setInterval} from 'timers';
+import {resolve} from 'url';
 
 export interface DeviceInfo {
   port: string;
@@ -29,18 +30,20 @@ export class SerialPortLite {
                 reject(error);
                 return;
               }
-              const list = await getMacDeviceId(parseUnixCOMList(stdout));
+              const list = await getMacDeviceId(parseMacCOMList(stdout));
               resolve(list);
             });
           } else if (os.type() === 'Linux') {
-            exec('ls /dev/ttyACM*', (error, stdout, stderr) => {
-              if (error) {
-                reject(error);
-                return;
-              }
-              const list = parseUnixCOMList(stdout);
-              resolve(list);
-            });
+            exec(
+                'find /sys/bus/usb/devices/usb*/ -name dev',
+                (error, stdout, stderr) => {
+                  if (error) {
+                    reject(error);
+                    return;
+                  }
+                  const list = parseLinuxDeviceList(stdout);
+                  resolve(list);
+                });
           } else {
             reject(new Error(`Unsupported OS: ${os.type()}`));
           }
@@ -151,13 +154,72 @@ function parseWindowsCOMList(rawList: string): DeviceInfo[] {
   return list;
 }
 
-function parseUnixCOMList(rawList: string): DeviceInfo[] {
+function parseMacCOMList(rawList: string): DeviceInfo[] {
   const list: DeviceInfo[] = [];
   const lines = rawList.trim().split('\n');
   lines.forEach(line => {
     list.push({port: line, vendorId: null, productId: null});
   });
   return list;
+}
+
+async function parseLinuxDeviceList(rawList: string): Promise<DeviceInfo[]> {
+  return new Promise(
+      async (
+          resolve: (value: DeviceInfo[]) => void,
+          reject: (reason: Error) => void) => {
+        try {
+          const list: DeviceInfo[] = [];
+          const lines = rawList.trim().split('\n');
+          for (let i = 0; i < lines.length; i++) {
+            if (/ttyACM\d+\/dev$/.test(lines[i])) {
+              const matches = lines[i].match(/(ttyACM\d+)\/dev$/);
+              if (matches && matches.length > 1) {
+                const port = `/dev/${matches[1]}`;
+                const devicePath = lines[i].substr(0, lines[i].length - 4);
+                const currentDevice = await getLinuxDeviceId(port, devicePath);
+                list.push(currentDevice);
+              }
+            }
+          }
+          resolve(list);
+        } catch (error) {
+          reject(error);
+        }
+      });
+}
+
+async function getLinuxDeviceId(
+    port: string, devicePath: string): Promise<DeviceInfo> {
+  return new Promise(
+      async (
+          resolve: (value: DeviceInfo) => void,
+          reject: (reason: Error) => void) => {
+        exec(
+            `udevadm info -q property -p ${devicePath}`,
+            (error, stdout, stderr) => {
+              if (error) {
+                reject(error);
+                return;
+              }
+
+              const device:
+                  DeviceInfo = {port, vendorId: null, productId: null};
+
+              const lines = stdout.trim().split('\n');
+              for (let i = 0; i < lines.length; i++) {
+                const pidMatches = lines[i].match(/ID_MODEL_ID=(.*)/);
+                const vidMatches = lines[i].match(/ID_VENDOR_ID=(.*)/);
+                if (vidMatches && vidMatches.length > 1) {
+                  device.vendorId = Number(`0x${vidMatches[1]}`);
+                } else if (pidMatches && pidMatches.length > 1) {
+                  device.productId = Number(`0x${pidMatches[1]}`);
+                }
+              }
+
+              resolve(device);
+            });
+      });
 }
 
 export interface MacDeviceInfo {
