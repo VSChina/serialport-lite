@@ -1,5 +1,6 @@
 import {exec} from 'child_process';
 import * as os from 'os';
+import {setInterval} from 'timers';
 
 export interface DeviceInfo {
   port: string;
@@ -58,14 +59,32 @@ export class SerialPortLite {
                 reject(error);
                 return;
               }
-              exec(`echo ${data} > \\\\.\\${port}`, (error, stdout, stderr) => {
-                if (error) {
-                  reject(error);
+
+              const _data: string[] = [];
+
+              while (data.length > 120) {
+                _data.push(data.substr(0, 120));
+                data = data.substr(120);
+              }
+
+              _data.push(data);
+
+              const sender = setInterval(() => {
+                if (_data.length === 0) {
+                  clearInterval(sender);
+                  resolve(true);
                   return;
                 }
-
-                resolve(true);
-              });
+                exec(
+                    `echo ${_data.shift()} > \\\\.\\${port}`,
+                    (error, stdout, stderr) => {
+                      if (error) {
+                        clearInterval(sender);
+                        reject(error);
+                        return;
+                      }
+                    });
+              }, 1000);
             });
           } else {
             exec(`stty -speed ${speed} < ${port}`, (error, stdout, stderr) => {
