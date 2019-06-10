@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sneezry/serialport-lite.git"
+    "url": "git+https://github.com/VSChina/serialport-lite.git"
   },
-  "author": "Zhe Li",
+  "author": "Microsoft",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Sneezry/serialport-lite/issues"
+    "url": "https://github.com/VSChina/serialport-lite/issues"
   },
-  "homepage": "https://github.com/Sneezry/serialport-lite#readme",
+  "homepage": "https://github.com/VSChina/serialport-lite#readme",
   "devDependencies": {
     "@types/node": "^7.0.43",
     "gts": "^0.5.2",
